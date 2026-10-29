@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#087F8C">
+<title>Scan & Share</title>
+<style>
+:root{--p:#087F8C;--s:#3478F6;--bg:#F5FAFB;--t:#18323A;--l:#E2F5F4}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+body{margin:0;font:16px system-ui,sans-serif;background:linear-gradient(#d3f0ee,#F5FAFB 260px) no-repeat,var(--bg);color:var(--t)}
+h1,h2,h3{margin:0}
+#splash{position:fixed;inset:0;z-index:99;background:linear-gradient(160deg,#087F8C,#3478F6);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;transition:opacity .5s}
+#splash.out{opacity:0;pointer-events:none}
+.lg{position:relative;width:84px;height:84px;margin-bottom:8px}
+.lg .ln{position:absolute;left:6px;right:6px;height:3px;border-radius:3px;background:#fff;box-shadow:0 0 12px #fff;animation:sc 1.6s ease-in-out infinite}
+@keyframes sc{0%,100%{top:14%}50%{top:82%}}
+.bar{width:180px;height:5px;border-radius:5px;background:#fff4;overflow:hidden;margin-top:14px}
+.bar i{display:block;height:100%;background:#fff;animation:ld 2.2s ease-out forwards}
+@keyframes ld{from{width:0}to{width:100%}}
+#splash p{margin:0;opacity:.9}
+.view{display:none;padding:16px 16px 96px}
+.view.on{display:block;animation:f .25s}
+@keyframes f{from{opacity:0;transform:translateY(8px)}}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#fff;box-shadow:0 -2px 12px #0001;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:0;padding:8px 0;color:#6b8790;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:56px}
+nav button.on{color:var(--p);font-weight:700}
+.card{background:#fff;border-radius:18px;box-shadow:0 2px 10px #087f8c1f;padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.act{border:0;color:#fff;min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;font:700 15px system-ui;margin:0;position:relative;overflow:hidden;transition:transform .15s}
+.act:active{transform:scale(.96)}
+.act::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;background:#fff2;right:-34px;top:-34px}
+.act::before{content:"";position:absolute;width:70px;height:70px;border-radius:50%;background:#fff1;left:-20px;bottom:-20px}
+.act i{width:68px;height:68px;border-radius:50%;background:#fff3;border:2px solid #fffa;color:#fff;display:grid;place-items:center;position:relative;z-index:1;box-shadow:0 4px 12px #0003}
+.act i svg{width:34px;height:34px}
+.c1{background:linear-gradient(135deg,#087F8C,#1fbfae)}.c2{background:linear-gradient(135deg,#3478F6,#62a8ff)}.c3{background:linear-gradient(135deg,#7b4dff,#b08cff)}.c4{background:linear-gradient(135deg,#ef7d1a,#ffb85c)}
+.ib{width:46px;height:46px;border-radius:50%;background:var(--l);color:var(--p);display:grid;place-items:center;flex:none}
+.ib.qr{background:#ece6ff;color:#7b4dff}.ib.pdf{background:#ffe9d1;color:#e07a10}
+.btn,.btn2{border:0;border-radius:12px;padding:12px 16px;min-height:44px;font:600 15px system-ui;background:linear-gradient(135deg,#087F8C,#3478F6);color:#fff;box-shadow:0 3px 8px #087f8c40}
+.btn2{background:var(--l);color:var(--p);box-shadow:none}
+.card:not(.act){border-top:4px solid #3478F6}
+.view>h2{font-size:22px;color:var(--p);margin-bottom:12px}
+.hero{background:linear-gradient(135deg,#087F8C,#3478F6);color:#fff;border-radius:22px;padding:18px;margin:14px 0 4px;box-shadow:0 6px 16px #3478f64d}
+.hero h2{font-size:22px}.hero p{margin:6px 0 0;opacity:.9;font-size:14px}
+nav button span{width:50px;height:30px;border-radius:15px;display:grid;place-items:center;transition:.2s}
+nav button.on span{background:var(--l)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.row>*{flex:1}
+input,select{width:100%;padding:12px;border:1px solid #cfe3e6;border-radius:12px;font:16px system-ui;background:#fff;color:var(--t);margin:6px 0}
+input[type=range]{padding:0;border:0}input[type=color]{height:44px;padding:2px}
+label{font-size:13px;color:#4c6870}
+.top{display:flex;align-items:center;gap:10px}.top b{font-size:20px}
+.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;display:grid;place-items:center}
+.cam{position:relative;aspect-ratio:3/4;max-height:58vh;width:100%;background:#0b1f24;border-radius:18px;overflow:hidden}
+.cam video{width:100%;height:100%;object-fit:cover}
+.fr{position:absolute;inset:20% 14%;border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 999px #0005}
+.cam .row{position:absolute;bottom:8px;left:8px;right:8px;margin:0}
+.it{display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:10px;margin:8px 0;box-shadow:0 1px 6px #087f8c14}
+.im{flex:1;min-width:0}.im b,.im small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.im small{color:#6b8790;font-size:12px}
+.it button{border:0;background:0;font-size:18px;min-width:40px;min-height:40px}
+.emp{text-align:center;color:#6b8790;padding:18px}
+#rt{word-break:break-all;white-space:pre-wrap;background:var(--l);padding:10px;border-radius:10px}
+#th{display:flex;gap:8px;overflow-x:auto;padding:4px 0}
+#th img{height:72px;border-radius:8px;border:3px solid transparent;flex:none}#th img.on{border-color:var(--p)}
+#pv canvas{max-width:100%;border-radius:10px;box-shadow:0 2px 10px #0003;display:block;margin:auto}
+#modal{position:fixed;inset:0;background:#0007;z-index:90;display:none;align-items:center;justify-content:center;padding:20px}
+#modal.on{display:flex}#modal .box{background:#fff;border-radius:18px;padding:18px;width:100%;max-width:380px;word-break:break-word}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--t);color:#fff;padding:10px 16px;border-radius:20px;z-index:95;font-size:14px;opacity:0;transition:.3s;pointer-events:none;max-width:90%}
+#toast.on{opacity:1}
+.warn{background:#fff4e0;border-radius:10px;padding:10px;font-size:13px}
+details{margin:8px 0}summary{min-height:36px;color:var(--p);font-weight:600}
+#modal{z-index:100}#toast{z-index:101}
+.ph{display:flex;align-items:center;gap:12px;border-radius:20px;padding:14px 16px;margin-bottom:14px;color:#fff;box-shadow:0 6px 16px #0002}
+.ph i{width:52px;height:52px;border-radius:50%;background:#fff3;border:2px solid #fffa;display:grid;place-items:center;flex:none}
+.ph h2{color:#fff;margin:0;font-size:20px}.ph p{margin:2px 0 0;font-size:13px;opacity:.92}
+.p1{background:linear-gradient(135deg,#087F8C,#1fbfae)}.p2{background:linear-gradient(135deg,#7b4dff,#b08cff)}.p3{background:linear-gradient(135deg,#ef7d1a,#ffb85c)}.p4{background:linear-gradient(135deg,#3478F6,#62a8ff)}.p5{background:linear-gradient(135deg,#475b63,#7b929a)}
+.stats{display:flex;gap:10px;margin-bottom:12px}.stats div{flex:1;text-align:center;background:#fff;border-radius:14px;padding:10px;font-size:12px;color:#4c6870;box-shadow:0 1px 6px #087f8c14}.stats b{display:block;font-size:22px;color:var(--p)}
+.srow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #0001}.srow input{width:auto;margin:0 6px;transform:scale(1.5)}
+#lock{position:fixed;inset:0;z-index:98;background:linear-gradient(160deg,#087F8C,#3478F6);color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+#lock.on{display:flex}
+.dots{display:flex;gap:14px;height:18px}.dots i{width:16px;height:16px;border-radius:50%;border:2px solid #fff}.dots i.f{background:#fff}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}.pad button{height:72px;border-radius:50%;border:2px solid #fff8;background:#fff2;color:#fff;font:600 26px system-ui}
+.sh{animation:sh .3s}@keyframes sh{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+[data-theme=dark]{--bg:#0e1a1e;--t:#e6f1f3;--l:#173238}
+[data-theme=dark] body{background:linear-gradient(#0b3b40,#0e1a1e 260px) no-repeat,#0e1a1e}
+[data-theme=dark] .card:not(.act),[data-theme=dark] nav,[data-theme=dark] .it,[data-theme=dark] #modal .box,[data-theme=dark] .stats div{background:#16262b}
+[data-theme=dark] input,[data-theme=dark] select{background:#1b2f35;border-color:#2c474e;color:var(--t)}
+[data-theme=dark] .btn2,[data-theme=dark] summary,[data-theme=dark] .stats b,[data-theme=dark] .view>h2{color:#5eead4}
+[data-theme=dark] .warn{background:#3a2c14}
+[data-theme=dark] label,[data-theme=dark] .stats div,[data-theme=dark] .im small{color:#9fb8bf}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+</style></head><body>
+
+<div id="splash">
+ <div class="lg"><svg viewBox="0 0 64 64" width="84" height="84" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"><path d="M10 22V12a2 2 0 012-2h10M42 10h10a2 2 0 012 2v10M54 42v10a2 2 0 01-2 2H42M22 54H12a2 2 0 01-2-2V42"/><rect x="22" y="22" width="8" height="8"/><rect x="34" y="22" width="8" height="8"/><rect x="22" y="34" width="8" height="8"/></svg><i class="ln"></i></div>
+ <h1>Scan &amp; Share</h1><p>Scan it. Save it. Share it.</p>
+ <div class="bar"><i></i></div><small id="ls">Loading…</small>
+</div>
+
+<main>
+<section class="view on" id="v-home">
+ <div class="top"><span class="logo" data-ic="scan"></span><b>Scan &amp; Share</b></div>
+ <div class="hero"><h2>Scan it. Save it. Share it.</h2><p>Scan codes, make PDFs and share in seconds.</p></div>
+ <div class="grid">
+  <button class="card act c1" data-go="scan"><i data-ic="scan"></i>Scan QR / Barcode</button>
+  <button class="card act c2" data-go="pdf" data-m="Scan Document"><i data-ic="docs"></i>Scan Document</button>
+  <button class="card act c3" data-go="create"><i data-ic="qr"></i>Create QR Code</button>
+  <button class="card act c4" data-go="pdf" data-m="Images to PDF"><i data-ic="img"></i>Images to PDF</button>
+ </div>
+ <div class="stats" id="st"></div>
+ <input id="hs" type="search" placeholder="Search saved items">
+ <h3>Recent</h3><div id="hl"></div>
+</section>
+
+<section class="view" id="v-scan">
+ <div class="ph p1"><i data-ic="scan"></i><div><h2>Scan QR / Barcode</h2><p>Point at a code. It is read on your device.</p></div></div>
+ <div class="cam"><video id="vid" playsinline muted></video><div class="fr"></div>
+  <div class="row"><button class="btn2" id="torch" hidden>Flashlight</button><button class="btn2" id="flip" hidden>Switch camera</button></div></div>
+ <div class="row"><button class="btn" id="cstart">Start camera</button><button class="btn2" id="cstop">Stop</button></div>
+ <p id="cm" style="font-size:13px;color:#4c6870"></p>
+ <div class="card" id="res" hidden>
+  <small id="rf"></small><p id="rt"></p>
+  <div class="row"><button class="btn" id="rc">Copy</button><button class="btn2" id="ro">Open link</button><button class="btn2" id="rw">Search web</button></div>
+ </div>
+ <div class="card"><label>Manual entry</label><input id="man" placeholder="Type or paste code content">
+  <div class="row"><button class="btn2" id="mgo">Check text</button><button class="btn2" id="fimg">Scan from image</button></div>
+  <input type="file" id="fin" accept="image/*" hidden></div>
+</section>
+
+<section class="view" id="v-create">
+ <div class="ph p2"><i data-ic="qr"></i><div><h2>Create QR Code</h2><p>Links, text, email, phone and Wi-Fi.</p></div></div>
+ <div class="card">
+  <select id="qt"><option value="url">Website URL</option><option value="text">Plain text</option><option value="email">Email address</option><option value="phone">Phone number</option><option value="wifi">Wi-Fi</option></select>
+  <input id="q1" placeholder="https://example.com">
+  <div id="wf" hidden><input id="ws" placeholder="Network name (SSID)"><input id="wp" placeholder="Password"><select id="wt"><option>WPA</option><option>WEP</option><option value="nopass">None</option></select>
+   <p class="warn">Anyone who scans this code may be able to join your network and see the password.</p></div>
+  <div class="row"><div><label>Size</label><select id="qs"><option value="256">Small</option><option value="512" selected>Medium</option><option value="1024">Large</option></select></div>
+   <div><label>Color</label><input type="color" id="fg" value="#18323a"></div><div><label>Background</label><input type="color" id="bgc" value="#ffffff"></div></div>
+  <p id="qe" style="color:#c0392b;font-size:13px;margin:0"></p>
+ </div>
+ <div class="card" style="text-align:center"><canvas id="qc" style="max-width:100%;width:260px"></canvas>
+  <div class="row"><button class="btn" id="qd">Download PNG</button><button class="btn2" id="qcp">Copy text</button><button class="btn2" id="qsv">Save</button></div></div>
+ <h3>Saved QR codes</h3><div id="ql"></div>
+</section>
+
+<section class="view" id="v-pdf">
+ <div class="ph p3"><i data-ic="img"></i><div><h2 id="pt">Images to PDF</h2><p>Add pages, edit them, export a real PDF.</p></div></div>
+ <div class="row"><button class="btn" id="padd">Add images</button><button class="btn2" id="pcam">Take photo</button></div>
+ <input type="file" id="pin" accept="image/*" multiple hidden><input type="file" id="pcin" accept="image/*" capture="environment" hidden>
+ <div id="pe" class="emp">No pages yet. Add images or take a photo.</div>
+ <div id="ed" hidden>
+  <div id="pv"></div><small id="pc" style="color:#6b8790"></small><div id="th"></div>
+  <div class="row"><button class="btn2" id="pl">◀</button><button class="btn2" id="pr">▶</button><button class="btn2" id="prot">Rotate</button><button class="btn2" id="pbw">B&amp;W</button><button class="btn2" id="pdel">Remove</button></div>
+  <label>Brightness</label><input type="range" id="br" min="50" max="150" value="100">
+  <label>Contrast</label><input type="range" id="co" min="50" max="150" value="100">
+  <details><summary>Crop</summary>
+   <label>Top</label><input type="range" class="cr" min="0" max="40" value="0"><label>Right</label><input type="range" class="cr" min="0" max="40" value="0">
+   <label>Bottom</label><input type="range" class="cr" min="0" max="40" value="0"><label>Left</label><input type="range" class="cr" min="0" max="40" value="0"></details>
+  <div class="card"><label>File name</label><input id="pn" value="Scan & Share document">
+   <div class="row"><div><label>Page size</label><select id="ps"><option value="a4">A4</option><option value="letter">Letter</option><option value="fit">Fit to image</option></select></div>
+   <div><label>Orientation</label><select id="po"><option value="p">Portrait</option><option value="l">Landscape</option></select></div></div>
+   <label>Margin: <span id="mv">10</span> mm</label><input type="range" id="pm" min="0" max="30" value="10">
+   <label>Quality</label><select id="pq"><option value="h">High</option><option value="m" selected>Balanced</option><option value="s">Small file</option></select>
+   <button class="btn" id="pex" style="width:100%">Create PDF</button>
+   <div class="row" id="pdone" hidden><button class="btn2" id="pdl">Download</button><button class="btn2" id="psh" hidden>Share</button></div></div>
+ </div>
+</section>
+
+<section class="view" id="v-docs">
+ <div class="ph p4"><i data-ic="docs"></i><div><h2>Documents</h2><p>Your scans, QR codes and PDFs in one place.</p></div></div>
+ <input id="ds" type="search" placeholder="Search">
+ <div class="row"><select id="df"><option value="">All</option><option value="scan">Scans</option><option value="qr">QR codes</option><option value="pdf">PDFs</option></select>
+ <select id="dso"><option value="n">Newest</option><option value="o">Oldest</option><option value="a">Name A–Z</option></select></div>
+ <small id="dc" style="color:#6b8790"></small><div id="dl"></div>
+</section>
+
+<section class="view" id="v-set">
+ <div class="ph p5"><i data-ic="gear"></i><div><h2>Settings</h2><p>Theme, lock and privacy.</p></div></div>
+ <div class="card"><h3>Appearance &amp; security</h3>
+  <div class="srow"><span>Dark mode</span><input type="checkbox" id="sdk"></div>
+  <div class="srow"><span>App lock (PIN)</span><input type="checkbox" id="slk"></div>
+  <button class="btn2" id="schg" hidden style="width:100%;margin-top:8px">Change PIN</button>
+  <p style="font-size:13px;color:#6b8790">The lock keeps casual users out of the app. It does not encrypt your saved history.</p></div>
+ <div class="card"><h3>Scanning</h3>
+  <div class="srow"><span>Vibrate on scan</span><input type="checkbox" id="svb"></div>
+  <div class="srow"><span>Save scans to history</span><input type="checkbox" id="sau"></div></div>
+ <div class="card"><h3>Privacy</h3><p>Scanning, QR creation and PDF export all happen on your device. Nothing is uploaded. History is kept in this app’s browser storage, which Android or you can clear at any time. PDF files themselves are saved only where you download them.</p></div>
+ <div class="card"><h3>Camera help</h3><p>If the camera is blocked, open Android Settings → Apps → Scan &amp; Share → Permissions → Camera. Camera access needs HTTPS or an app that grants it.</p></div>
+ <div class="card"><h3>Help</h3><p>Scan opens the live camera or reads a code from an image. Documents and Images to PDF share one editor: add pages, adjust, reorder, then create the PDF. There is no automatic edge detection or OCR.</p></div>
+ <button class="btn2" id="clr" style="width:100%">Clear local history</button>
+ <p style="text-align:center;color:#6b8790;font-size:13px">Scan &amp; Share v1.0.0</p>
+</section>
+</main>
+
+<nav>
+ <button data-go="home" class="on"><span data-ic="home"></span>Home</button>
+ <button data-go="scan"><span data-ic="scan"></span>Scan</button>
+ <button data-go="docs"><span data-ic="docs"></span>Documents</button>
+ <button data-go="set"><span data-ic="gear"></span>Settings</button>
+</nav>
+<div id="lock"><h2>Scan &amp; Share</h2><p id="lm">Enter your PIN</p><div class="dots" id="ld"><i></i><i></i><i></i><i></i></div><div class="pad" id="lp"></div><button class="btn2" id="lf" style="background:#fff3;color:#fff">Forgot PIN?</button></div>
+<div id="modal"></div><div id="toast"></div>
+
+<!-- Needs internet on first load unless you host these three files locally -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const IC={home:'M3 11l9-8 9 8M5 10v10h14V10',scan:'M4 8V5a1 1 0 011-1h3M16 4h3a1 1 0 011 1v3M20 16v3a1 1 0 01-1 1h-3M8 20H5a1 1 0 01-1-1v-3M4 12h16',docs:'M6 3h8l4 4v14H6zM14 3v4h4M9 13h6M9 17h6',gear:'M12 9a3 3 0 100 6 3 3 0 000-6zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2',qr:'M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v6h-4M14 18h2v2',img:'M4 5h16v14H4zM4 16l5-5 4 4 3-3 4 4'};
+const ic=n=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><path d="${IC[n]}"/></svg>`;
+$$('[data-ic]').forEach(e=>e.innerHTML=ic(e.dataset.ic));
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2600)}
+function dlg(title,body,o={}){return new Promise(r=>{const m=$('#modal');m.innerHTML=`<div class="box"><h3>${esc(title)}</h3><p>${body}</p>${o.input!=null?`<input id="mi" type="${o.type||'text'}" inputmode="${o.type=='password'?'numeric':'text'}" value="${esc(o.input)}">`:''}<div class="row">${o.cancel===false?'':'<button class="btn2" id="mc">Cancel</button>'}<button class="btn" id="mo">${o.ok||'OK'}</button></div></div>`;m.classList.add('on');const d=v=>{m.classList.remove('on');r(v)};$('#mo').onclick=()=>d(o.input!=null?$('#mi').value:true);const c=$('#mc');if(c)c.onclick=()=>d(null)})}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+let D={items:[]};try{D=JSON.parse(localStorage.getItem('ss'))||D}catch(e){}
+const save=()=>{try{localStorage.setItem('ss',JSON.stringify(D))}catch(e){toast('Could not save: storage blocked or full')}};
+function add(type,name,text,x){D.items.unshift({id:uid(),type,name,text,date:Date.now(),...x});D.items=D.items.slice(0,300);save();renderHome();renderDocs()}
+async function copy(t){try{await navigator.clipboard.writeText(t)}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e2){}a.remove()}toast('Copied')}
+function dlBlob(b,n){const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+
+/* navigation */
+function go(v,m){if(v!='scan')stopCam();$$('.view').forEach(e=>e.classList.toggle('on',e.id=='v-'+v));$$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.go==v));if(m)$('#pt').textContent=m;scrollTo(0,0);if(v=='docs')renderDocs()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go,b.dataset.m)});
+
+/* history lists */
+const fmtD=t=>new Date(t).toLocaleString([], {dateStyle:'medium',timeStyle:'short'});
+function listHtml(a){return a.length?a.map(i=>`<div class="it" data-id="${i.id}"><span class="ib ${i.type}">${ic(i.type=='pdf'?'docs':i.type=='qr'?'qr':'scan')}</span><div class="im"><b>${esc(i.name)}</b><small>${{scan:'Scan',qr:'QR code',pdf:'PDF'}[i.type]} · ${fmtD(i.date)}</small></div><button data-a="r" aria-label="Rename">✎</button><button data-a="d" aria-label="Delete">🗑</button></div>`).join(''):'<p class="emp">Nothing here yet. Scan a code, create a QR or make a PDF and it will show up here.</p>'}
+function renderHome(){const q=$('#hs').value.toLowerCase();let a=D.items;if(q)a=a.filter(i=>(i.name+' '+(i.text||'')).toLowerCase().includes(q));$('#hl').innerHTML=listHtml(a.slice(0,q?50:5));const n=t=>D.items.filter(i=>i.type==t).length;$('#st').innerHTML=`<div><b>${n('scan')}</b>Scans</div><div><b>${n('qr')}</b>QR codes</div><div><b>${n('pdf')}</b>PDFs</div>`;$('#ql').innerHTML=listHtml(D.items.filter(i=>i.type=='qr').slice(0,3))}
+function renderDocs(){const q=$('#ds').value.toLowerCase(),f=$('#df').value,s=$('#dso').value;let a=D.items.filter(i=>(!f||i.type==f)&&(i.name+' '+(i.text||'')).toLowerCase().includes(q));a=[...a].sort((x,y)=>s=='a'?x.name.localeCompare(y.name):s=='o'?x.date-y.date:y.date-x.date);$('#dl').innerHTML=listHtml(a);$('#dc').textContent=a.length+' item(s)'}
+['#hs'].forEach(s=>$(s).oninput=renderHome);['#ds','#df','#dso'].forEach(s=>$(s).oninput=renderDocs);
+document.addEventListener('click',async e=>{const it=e.target.closest('.it');if(!it)return;const i=D.items.find(x=>x.id==it.dataset.id);if(!i)return;const a=e.target.closest('button')?.dataset.a;
+ if(a=='d'){if(await dlg('Delete this item?',esc(i.name),{ok:'Delete'})){D.items=D.items.filter(x=>x!=i);save();renderHome();renderDocs()}}
+ else if(a=='r'){const n=await dlg('Rename','',{input:i.name});if(n&&n.trim()){i.name=n.trim().slice(0,80);save();renderHome();renderDocs()}}
+ else{const t=i.type=='pdf'?`PDF with ${i.pages} page(s). The file was saved where you downloaded it; only this record is kept in the app.`:esc(i.text);if(i.type!='pdf'){if(await dlg(i.name,t,{ok:'Copy'}))copy(i.text)}else dlg(i.name,t,{cancel:false})}});
+$('#clr').onclick=async()=>{if(await dlg('Clear all history?','This removes every saved scan, QR code and PDF record from this device.',{ok:'Clear'})){D.items=[];save();renderHome();renderDocs();toast('History cleared')}};
+
+/* scanner */
+let stream,track,devs=[],di=-1,det=null,busy=0,cv0=document.createElement('canvas');
+try{if('BarcodeDetector' in window){det=new BarcodeDetector();BarcodeDetector.getSupportedFormats().then(f=>$('#cm').textContent='Supported formats on this device: '+f.join(', ').replace(/_/g,' ')+'.')}}catch(e){det=null}
+if(!det)$('#cm').textContent='This device reads QR codes only. Other barcode formats are not supported here.';
+function camMsg(m){$('#cm').textContent=m}
+async function startCam(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return camMsg('Camera is not available here (it needs HTTPS or an app with camera permission). Use manual entry or Scan from image.');
+ stopCam();const v={};if(di>=0&&devs[di])v.deviceId={exact:devs[di]};else v.facingMode='environment';
+ try{stream=await navigator.mediaDevices.getUserMedia({video:v,audio:false})}catch(e){return camMsg(e.name=='NotAllowedError'?'Camera permission denied. Allow it in Android Settings → Apps → Scan & Share → Permissions, then tap Start camera.':e.name=='NotFoundError'?'No camera found on this device.':'Could not open the camera: '+e.message)}
+ const vd=$('#vid');vd.srcObject=stream;await vd.play().catch(()=>{});track=stream.getVideoTracks()[0];
+ const cap=(track.getCapabilities&&track.getCapabilities())||{};$('#torch').hidden=!cap.torch;
+ devs=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind=='videoinput').map(d=>d.deviceId);$('#flip').hidden=devs.length<2;
+ camMsg('Point the camera at a code.');loop()}
+function stopCam(){if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('#vid').srcObject=null;$('#torch').hidden=$('#flip').hidden=true}
+async function decode(src){const w=src.videoWidth||src.naturalWidth||src.width,h=src.videoHeight||src.naturalHeight||src.height;if(!w)return;
+ if(det){try{const b=await det.detect(src);if(b.length)return{t:b[0].rawValue,f:b[0].format}}catch(e){}}
+ if(window.jsQR){const k=Math.min(1,800/Math.max(w,h));cv0.width=Math.round(w*k);cv0.height=Math.round(h*k);const x=cv0.getContext('2d',{willReadFrequently:true});x.drawImage(src,0,0,cv0.width,cv0.height);const d=x.getImageData(0,0,cv0.width,cv0.height),q=jsQR(d.data,d.width,d.height);if(q)return{t:q.data,f:'qr_code'}}}
+function loop(){if(!stream)return;const v=$('#vid');if(!busy&&v.readyState>=2){busy=1;decode(v).then(r=>{busy=0;if(r&&stream)show(r.t,r.f);else setTimeout(loop,120)}).catch(()=>{busy=0;setTimeout(loop,200)})}else setTimeout(loop,120)}
+function show(t,f,keep){stopCam();$('#res').hidden=false;$('#rt').textContent=t;$('#rf').textContent='Format: '+f.replace(/_/g,' ');$('#ro').hidden=!/^https?:\/\//i.test(t);if(!keep&&S.auto!==false)add('scan',t.slice(0,48),t,{fmt:f});if(!keep&&S.vib!==false&&navigator.vibrate)navigator.vibrate(80);camMsg('Code detected.')}
+$('#cstart').onclick=()=>{$('#res').hidden=true;startCam()};$('#cstop').onclick=()=>{stopCam();camMsg('Camera stopped.')};
+$('#torch').onclick=async()=>{try{const on=!$('#torch').dataset.on;await track.applyConstraints({advanced:[{torch:on}]});$('#torch').dataset.on=on?'1':''}catch(e){toast('Flashlight not available')}};
+$('#flip').onclick=()=>{di=(di+1)%devs.length;startCam()};
+$('#rc').onclick=()=>copy($('#rt').textContent);
+$('#ro').onclick=async()=>{const u=$('#rt').textContent;if(await dlg('Open this link?','Destination:<br><b>'+esc(u)+'</b><br><br>Only open links you trust.',{ok:'Open'}))window.open(u,'_blank','noopener')};
+$('#rw').onclick=async()=>{const u=$('#rt').textContent;if(await dlg('Search the web?','This sends the text to Google in your browser.',{ok:'Search'}))window.open('https://www.google.com/search?q='+encodeURIComponent(u),'_blank','noopener')};
+$('#mgo').onclick=()=>{const v=$('#man').value.trim();if(!v)return toast('Enter some text first');show(v,'manual entry')};
+$('#fimg').onclick=()=>$('#fin').click();
+$('#fin').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{const im=await loadImg(f),r=await decode(im);if(r)show(r.t,r.f);else toast('No supported code found in this image')}catch(x){toast(x.message)}};
+function loadImg(f){return new Promise((ok,no)=>{if(!f.type.startsWith('image/'))return no(Error('Not an image file: '+f.name));if(f.size>30e6)return no(Error('Image too large (max 30 MB)'));const u=URL.createObjectURL(f),i=new Image();i.onload=()=>{URL.revokeObjectURL(u);ok(i)};i.onerror=()=>no(Error('Could not read '+f.name));i.src=u})}
+
+/* QR generator */
+const PH={url:'https://example.com',text:'Your text',email:'name@example.com',phone:'+1 555 123 4567'};let qtxt='';
+function qrBuild(){const t=$('#qt').value,v=$('#q1').value.trim();$('#wf').hidden=t!='wifi';$('#q1').hidden=t=='wifi';$('#q1').placeholder=PH[t]||'';let s='',err='';
+ if(t=='url'){if(v){const u=/^https?:\/\//i.test(v)?v:'https://'+v;try{new URL(u);s=u}catch(e){err='Enter a valid web address.'}}}
+ else if(t=='text'){s=v;if(v.length>1000)err='Text is too long (max 1000 characters).'}
+ else if(t=='email'){if(v){if(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))s='mailto:'+v;else err='Enter a valid email address.'}}
+ else if(t=='phone'){if(v){if(/^\+?[0-9 ()-]{5,20}$/.test(v))s='tel:'+v.replace(/[ ()-]/g,'');else err='Enter a valid phone number.'}}
+ else{const n=$('#ws').value,e=x=>x.replace(/([\\;,:"])/g,'\\$1'),ty=$('#wt').value;if(n)s=`WIFI:T:${ty};S:${e(n)};${ty=='nopass'?'':'P:'+e($('#wp').value)+';'};`}
+ $('#qe').textContent=err;qtxt=err?'':s;const c=$('#qc'),x=c.getContext('2d');
+ if(!qtxt||!window.qrcode){c.width=c.height=1;x.clearRect(0,0,1,1);if(!window.qrcode&&qtxt)$('#qe').textContent='QR library not loaded. Connect to the internet once and reload.';return}
+ try{if(qrcode.stringToBytesFuncs)qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8'];const q=qrcode(0,'M');q.addData(qtxt);q.make();const n=q.getModuleCount(),cell=Math.max(2,Math.floor(+$('#qs').value/(n+8)));c.width=c.height=cell*(n+8);x.fillStyle=$('#bgc').value;x.fillRect(0,0,c.width,c.height);x.fillStyle=$('#fg').value;for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+4)*cell,(r+4)*cell,cell,cell)}catch(e){qtxt='';$('#qe').textContent='That text is too long for a QR code.'}}
+['#qt','#q1','#ws','#wp','#wt','#qs','#fg','#bgc'].forEach(s=>$(s).oninput=qrBuild);
+$('#qd').onclick=()=>{if(!qtxt)return toast('Enter valid content first');$('#qc').toBlob(b=>dlBlob(b,'qr-code.png'))};
+$('#qcp').onclick=()=>qtxt?copy(qtxt):toast('Enter valid content first');
+$('#qsv').onclick=()=>{if(!qtxt)return toast('Enter valid content first');add('qr',qtxt.slice(0,40),qtxt,{});toast('Saved')};
+qrBuild();
+
+/* pages editor / PDF */
+let pages=[],sel=0,pdfBlob=null,pdfName='';
+function rp(p,max){const[t,r,b,l]=p.cr,s=p.cv,sw=s.width*(1-(l+r)/100),sh=s.height*(1-(t+b)/100),q=p.rot%180?[sh,sw]:[sw,sh],k=max?Math.min(1,max/Math.max(...q)):1,c=document.createElement('canvas');c.width=Math.max(1,Math.round(q[0]*k));c.height=Math.max(1,Math.round(q[1]*k));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.filter=`brightness(${p.br}%) contrast(${p.co}%)${p.gs?' grayscale(1)':''}`;x.translate(c.width/2,c.height/2);x.rotate(p.rot*Math.PI/180);x.drawImage(s,s.width*l/100,s.height*t/100,sw,sh,-sw*k/2,-sh*k/2,sw*k,sh*k);return c}
+function prev(){if(pages[sel])$('#pv').replaceChildren(rp(pages[sel],800))}
+function draw(){$('#pe').hidden=!!pages.length;$('#ed').hidden=!pages.length;if(!pages.length)return;sel=Math.min(sel,pages.length-1);const p=pages[sel];$('#br').value=p.br;$('#co').value=p.co;$$('.cr').forEach((e,i)=>e.value=p.cr[i]);prev();$('#pc').textContent=pages.length+' page(s) · editing page '+(sel+1);$('#th').innerHTML=pages.map((q,i)=>`<img data-i="${i}" class="${i==sel?'on':''}" alt="Page ${i+1}" src="${rp(q,120).toDataURL()}">`).join('')}
+async function addFiles(fl){let n=0;for(const f of fl){try{const im=await loadImg(f),k=Math.min(1,2000/Math.max(im.naturalWidth,im.naturalHeight)),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);pages.push({cv:c,rot:0,br:100,co:100,gs:0,cr:[0,0,0,0]});sel=pages.length-1;n++}catch(e){toast(e.message)}}if(n){pdfBlob=null;$('#pdone').hidden=true;draw()}}
+$('#padd').onclick=()=>$('#pin').click();$('#pcam').onclick=()=>$('#pcin').click();
+$('#pin').onchange=$('#pcin').onchange=e=>{const f=[...e.target.files];e.target.value='';addFiles(f)};
+$('#th').onclick=e=>{const i=e.target.dataset.i;if(i!=null){sel=+i;draw()}};
+$('#prot').onclick=()=>{pages[sel].rot=(pages[sel].rot+90)%360;draw()};
+$('#pdel').onclick=()=>{pages.splice(sel,1);draw()};
+$('#pbw').onclick=()=>{pages[sel].gs=pages[sel].gs?0:1;draw()};
+const mv=d=>{const j=sel+d;if(j<0||j>=pages.length)return;[pages[sel],pages[j]]=[pages[j],pages[sel]];sel=j;draw()};$('#pl').onclick=()=>mv(-1);$('#pr').onclick=()=>mv(1);
+$('#br').oninput=e=>{pages[sel].br=+e.target.value;prev()};$('#co').oninput=e=>{pages[sel].co=+e.target.value;prev()};
+$$('.cr').forEach((e,i)=>e.oninput=()=>{pages[sel].cr[i]=+e.value;prev()});
+$$('#br,#co,.cr').forEach(e=>e.onchange=draw);
+$('#pm').oninput=e=>$('#mv').textContent=e.target.value;
+$('#pex').onclick=async()=>{if(!pages.length)return;if(!window.jspdf)return toast('PDF library not loaded. Connect to the internet once and reload.');
+ const b=$('#pex');b.disabled=true;b.textContent='Creating…';await new Promise(r=>setTimeout(r,30));
+ try{const{jsPDF}=window.jspdf,m=+$('#pm').value,sz=$('#ps').value,Q={h:[2000,.92],m:[1600,.8],s:[1100,.6]}[$('#pq').value];let pdf;
+  pages.forEach((p,i)=>{const c=rp(p,Q[0]);let w,h;if(sz=='fit'){w=c.width*.2646+2*m;h=c.height*.2646+2*m}else{[w,h]=sz=='a4'?[210,297]:[215.9,279.4];if($('#po').value=='l')[w,h]=[h,w]}
+   const o=w>h?'l':'p';if(!pdf)pdf=new jsPDF({unit:'mm',format:[w,h],orientation:o});else pdf.addPage([w,h],o);
+   const k=Math.min((w-2*m)/c.width,(h-2*m)/c.height),iw=c.width*k,ih=c.height*k;pdf.addImage(c.toDataURL('image/jpeg',Q[1]),'JPEG',(w-iw)/2,(h-ih)/2,iw,ih)});
+  pdfBlob=pdf.output('blob');pdfName=($('#pn').value.trim()||'document').replace(/[\\/:*?"<>|]/g,'_').slice(0,80);
+  $('#pdone').hidden=false;$('#psh').hidden=!(navigator.canShare&&navigator.canShare({files:[new File([pdfBlob],pdfName+'.pdf',{type:'application/pdf'})]}));
+  add('pdf',pdfName+'.pdf','',{pages:pages.length});toast('PDF created ('+pages.length+' pages)')}
+ catch(e){toast('PDF export failed: '+e.message)}b.disabled=false;b.textContent='Create PDF'};
+$('#pdl').onclick=()=>pdfBlob&&dlBlob(pdfBlob,pdfName+'.pdf');
+$('#psh').onclick=async()=>{try{await navigator.share({files:[new File([pdfBlob],pdfName+'.pdf',{type:'application/pdf'})],title:pdfName})}catch(e){if(e.name!='AbortError')toast('Sharing failed')}};
+renderHome();
+
+/* settings: theme, PIN lock */
+let S={};try{S=JSON.parse(localStorage.getItem('ss_s'))||{}}catch(e){}
+const saveS=()=>{try{localStorage.setItem('ss_s',JSON.stringify(S))}catch(e){}};
+function theme(){document.documentElement.dataset.theme=S.dark?'dark':'light';$('meta[name=theme-color]').content=S.dark?'#0e1a1e':'#087F8C'}
+theme();
+$('#sdk').checked=!!S.dark;$('#slk').checked=!!S.pin;$('#schg').hidden=!S.pin;$('#svb').checked=S.vib!==false;$('#sau').checked=S.auto!==false;
+$('#sdk').onchange=e=>{S.dark=e.target.checked;saveS();theme()};
+$('#svb').onchange=e=>{S.vib=e.target.checked;saveS()};
+$('#sau').onchange=e=>{S.auto=e.target.checked;saveS()};
+async function hash(p){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('ss:'+p));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let h=5381;for(const c of 'ss:'+p)h=(h*33)^c.charCodeAt(0);return'x'+(h>>>0)}}
+async function setPin(){const a=await dlg('Set a 4-digit PIN','',{input:'',type:'password',ok:'Next'});if(a==null)return false;if(!/^\d{4}$/.test(a)){toast('PIN must be 4 digits');return false}const b=await dlg('Confirm PIN','',{input:'',type:'password'});if(b!==a){toast('PINs did not match');return false}S.pin=await hash(a);saveS();toast('App lock is on');return true}
+$('#slk').onchange=async e=>{if(e.target.checked){e.target.checked=await setPin()}else{const p=await dlg('Enter PIN to turn off','',{input:'',type:'password'});if(p!=null&&await hash(p)==S.pin){delete S.pin;saveS();toast('App lock is off')}else{e.target.checked=true;if(p!=null)toast('Wrong PIN')}}$('#schg').hidden=!S.pin};
+$('#schg').onclick=async()=>{const p=await dlg('Enter current PIN','',{input:'',type:'password'});if(p==null)return;if(await hash(p)==S.pin)setPin();else toast('Wrong PIN')};
+let buf='',hid=0;
+const dots=()=>$$('#ld i').forEach((d,i)=>d.classList.toggle('f',i<buf.length));
+function lockOn(){if(!S.pin)return;buf='';dots();$('#lm').textContent='Enter your PIN';$('#lock').classList.add('on')}
+$('#lp').innerHTML=[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(k=>k===''?'<span></span>':`<button data-k="${k}">${k}</button>`).join('');
+$('#lp').onclick=async e=>{const k=e.target.dataset.k;if(k==null)return;buf=k=='⌫'?buf.slice(0,-1):(buf+k).slice(0,4);dots();if(buf.length==4){if(await hash(buf)==S.pin)$('#lock').classList.remove('on');else{$('#lm').textContent='Wrong PIN, try again';$('#ld').classList.add('sh');setTimeout(()=>$('#ld').classList.remove('sh'),400)}buf='';setTimeout(dots,200)}};
+$('#lf').onclick=async()=>{if(await dlg('Forgot PIN?','Resetting erases all saved history and turns the lock off.',{ok:'Erase and reset'})){D.items=[];save();delete S.pin;saveS();$('#slk').checked=false;$('#schg').hidden=true;$('#lock').classList.remove('on');renderHome();renderDocs()}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)hid=Date.now();else if(hid&&Date.now()-hid>30000)lockOn()});
+lockOn();
+
+/* splash */
+const wait=new Promise(r=>setTimeout(r,2200)),ld=new Promise(r=>document.readyState=='complete'?r():addEventListener('load',r));
+setTimeout(()=>{$('#ls').textContent='Almost ready…'},1200);
+Promise.all([wait,ld]).then(()=>{$('#splash').classList.add('out');setTimeout(()=>$('#splash').remove(),600);if(!window.jsQR||!window.qrcode||!window.jspdf)toast('Some tools did not load. Connect to the internet once and reload.');qrBuild()});
+</script>
+</body></html>
